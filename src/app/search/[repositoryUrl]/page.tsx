@@ -159,7 +159,7 @@ export default function Search({ params }: SearchProps) {
 
             <button
               type="submit"
-              className="rounded-md bg-indigo-600 px-6 py-1 sm:text-sm md:text-base font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-md bg-indigo-500 px-6 py-1 sm:text-sm md:text-base font-semibold text-white shadow-sm hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={!searchParams.get('q') || isLoading}
             >
               {isLoading ? 'Searching...' : 'Search'}
