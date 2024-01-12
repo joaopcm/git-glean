@@ -14,7 +14,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"repositoryUrl\": \"https://github.com/joaopcm/nodepad\"\n}",
+					"raw": "{\n    \"repositoryUrl\": \"https://github.com/joaopcm/nodepad\",\n    \"githubAccessToken\": \"<your-github-access-token-here> (optional)\",\n    \"githubBaseUrl\": \"<your-github-base-url-here> (optional)\",\n    \"githubApiUrl\": \"<your-github-api-url-here> (optional)\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
