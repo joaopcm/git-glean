@@ -8,7 +8,8 @@ import { TogetherAIService } from '../services/togetherai';
 
 export async function POST(request: Request) {
   try {
-    const { repositoryUrl } = await request.json();
+    const { repositoryUrl, githubAccessToken, githubBaseUrl, githubApiUrl } =
+      await request.json();
 
     if (!repositoryUrl) {
       return new Response(
@@ -31,10 +32,14 @@ export async function POST(request: Request) {
         'yarn.lock',
         'package-lock.json',
       ],
-      accessToken: process.env.GITHUB_ACCESS_TOKEN, // could be dynamic in order to support private repos
-      // we could load enterprise repos as well by providing a custom baseUrl and apiUrl
-      // baseUrl: '',
-      // apiUrl: '',
+      accessToken: githubAccessToken || process.env.GITHUB_ACCESS_TOKEN,
+      // in order to load enterprise repos, we provide the base and api url
+      ...(!!githubApiUrl && !!githubBaseUrl
+        ? {
+            baseUrl: githubBaseUrl,
+            apiUrl: githubApiUrl,
+          }
+        : {}),
     });
 
     // stream the documents in a memory-efficient manner
@@ -54,6 +59,7 @@ ${doc.pageContent}
       });
     }
 
+    console.log('loaded', docs.length, 'documents');
     const togetherAI = new TogetherAIService();
     const embeddings = await togetherAI.embed(docs.map((doc) => doc.text));
     const docsWithEmbeddings = docs.map((doc, index) => ({

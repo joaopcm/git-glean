@@ -26,7 +26,7 @@ export class TogetherAIService {
   async embed(texts: string[]) {
     const data = {
       // list of all the available embeddings models → https://docs.together.ai/docs/embedding-models
-      model: 'togethercomputer/m2-bert-80M-8k-retrieval',
+      model: 'sentence-transformers/msmarco-bert-base-dot-v5',
       input: texts,
     };
 
@@ -36,7 +36,9 @@ export class TogetherAIService {
       body: JSON.stringify(data),
     };
 
+    console.time('embeddings');
     const response = await fetch(`${this.baseUrl}/embeddings`, options);
+    console.timeEnd('embeddings');
     const result = (await response.json()) as EmbeddingsAPIResponse;
     return result.data.map((item) => item.embedding);
   }
