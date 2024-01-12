@@ -4,6 +4,14 @@ import { Disclosure } from '@headlessui/react';
 import { DocumentMagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, useCallback, useState } from 'react';
+
+type SearchAPIResponse = {
+  id: string;
+  source: string;
+  pageContent: string;
+}[];
 
 const navigation = [{ name: 'Get back to home', href: '/', current: false }];
 
@@ -13,6 +21,51 @@ interface SearchProps {
 
 export default function Search({ params }: SearchProps) {
   const decodedRepositoryUrl = decodeURIComponent(params.repositoryUrl);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(false);
+  const [results, setResults] = useState<SearchAPIResponse>([]);
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    try {
+      e.preventDefault();
+      setIsLoading(true);
+
+      const response = await fetch(`/api/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repositoryUrl: decodedRepositoryUrl,
+          input: searchParams.get('q'),
+        }),
+      });
+      const result = (await response.json()) as SearchAPIResponse;
+
+      if ('error' in result) {
+        throw new Error(result.error as string);
+      }
+
+      setResults(result);
+    } catch (error) {
+      console.error(JSON.stringify(error));
+      alert('Something went wrong! Check your console for more details.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-full">
@@ -90,18 +143,61 @@ export default function Search({ params }: SearchProps) {
       </div>
 
       <main className="-mt-32">
-        <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-          <div className="rounded-lg bg-white px-5 py-6 shadow sm:px-6">
-            Input here
-          </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <form onSubmit={handleSubmit} className="w-[100%] flex space-x-2">
+            <input
+              type="text"
+              className="flex flex-1 rounded-md border-0 px-8 py-7 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 md:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-white"
+              placeholder='e.g. Where do I use the "useState" hook most?'
+              value={searchParams.get('q') || ''}
+              onChange={(e) =>
+                router.push(
+                  pathname + '?' + createQueryString('q', e.target.value),
+                )
+              }
+              disabled={isLoading}
+            />
+
+            <button
+              type="submit"
+              className="rounded-md bg-indigo-600 px-6 py-1 sm:text-sm md:text-base font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!searchParams.get('q') || isLoading}
+            >
+              {isLoading ? 'Searching...' : 'Search'}
+            </button>
+          </form>
         </div>
       </main>
 
-      <div className="mt-16">
+      <div className="mt-24">
         <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-          <div className="rounded-lg bg-white px-5 py-6 shadow sm:px-6">
-            Results here
-          </div>
+          <ul role="list" className="divide-y divide-gray-100">
+            {results.map((result, index) => (
+              <li
+                key={result.id}
+                className="flex items-center justify-between gap-x-6 py-5"
+              >
+                <div className="min-w-0">
+                  <div className="flex items-start gap-x-3">
+                    <span className="text-gray-400">#{index + 1}</span>
+                    <p className="text-sm font-semibold leading-6 text-gray-900">
+                      {result.source}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-none items-center gap-x-4">
+                  <a
+                    href={decodedRepositoryUrl + '/blob/main/' + result.source}
+                    target="_blank"
+                    className="hidden rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:block"
+                  >
+                    View file
+                    <span className="sr-only">, {result.source}</span>
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
