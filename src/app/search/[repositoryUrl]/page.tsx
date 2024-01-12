@@ -149,7 +149,6 @@ export default function Search({ params }: SearchProps) {
               type="text"
               className="flex flex-1 rounded-md border-0 px-8 py-7 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 md:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-white"
               placeholder='e.g. Where do I use the "useState" hook most?'
-              value={searchParams.get('q') || ''}
               onChange={(e) =>
                 router.push(
                   pathname + '?' + createQueryString('q', e.target.value),
