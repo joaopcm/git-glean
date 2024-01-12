@@ -1,0 +1,71 @@
+{
+	"info": {
+		"_postman_id": "0275ed84-7464-409b-9e1e-72a4c9065378",
+		"name": "GitGlean",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8000421",
+		"_collection_link": "https://gold-comet-195622.postman.co/workspace/Personal~227276c3-79c2-4ddd-8d76-2a1db92f8366/collection/8000421-0275ed84-7464-409b-9e1e-72a4c9065378?action=share&source=collection_link&creator=8000421"
+	},
+	"item": [
+		{
+			"name": "/ingest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"repositoryUrl\": \"https://github.com/joaopcm/nodepad\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://git-glean.onrender.com/api/ingest",
+					"protocol": "https",
+					"host": [
+						"git-glean",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"api",
+						"ingest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/search",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"input\": \"export async function extractDependencies(jsCode: string): Promise<string[]> {\",\n    \"repositoryUrl\": \"https://github.com/joaopcm/nodepad\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://git-glean.onrender.com/api/search",
+					"protocol": "https",
+					"host": [
+						"git-glean",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"api",
+						"search"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

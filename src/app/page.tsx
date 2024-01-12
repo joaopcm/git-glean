@@ -1,6 +1,11 @@
+import Features from '@/components/features';
 import Hero from '@/components/hero';
-import { Button } from '@/components/ui/button';
 
 export default function Home() {
-  return <Hero />;
+  return (
+    <div>
+      <Hero />
+      <Features />
+    </div>
+  );
 }
