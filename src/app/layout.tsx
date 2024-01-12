@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--body-font' });
 export const metadata: Metadata = {
   title: 'GitGlean',
   description:
-    'Harness the Power of GitHub Insights. Instantly search, analyze, and extract top documents from public repositories with unparalleled ease and precision.',
+    'Instantly search and extract top documents from public repositories with unparalleled ease and precision.',
 };
 
 export default function RootLayout({
@@ -19,12 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body
-        className={cn(
-          'min-h-screen bg-neutral-950 antialiased',
-          inter.className,
-        )}
-      >
+      <body className={cn('min-h-screen antialiased', inter.className)}>
         {children}
       </body>
     </html>
