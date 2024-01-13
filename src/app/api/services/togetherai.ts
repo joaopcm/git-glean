@@ -13,6 +13,8 @@ export class TogetherAIService {
   private baseUrl: string;
   private apiKey: string;
   private headers: Headers;
+  private embeddingLLM = 'sentence-transformers/msmarco-bert-base-dot-v5';
+  private batchSize = 5;
 
   constructor() {
     this.baseUrl = 'https://api.together.xyz/v1';
@@ -23,23 +25,35 @@ export class TogetherAIService {
     });
   }
 
-  async embed(texts: string[]) {
-    const data = {
-      // list of all the available embeddings models → https://docs.together.ai/docs/embedding-models
-      model: 'sentence-transformers/msmarco-bert-base-dot-v5',
-      input: texts,
-    };
+  async embed(allTexts: string[]) {
+    const chunkedTexts = [];
+    for (let i = 0; i < allTexts.length; i += this.batchSize) {
+      chunkedTexts.push(allTexts.slice(i, i + this.batchSize));
+    }
 
-    const options = {
-      method: 'POST',
-      headers: this.headers,
-      body: JSON.stringify(data),
-    };
+    const promises = chunkedTexts.map(async (texts, index) => {
+      const data = {
+        model: this.embeddingLLM,
+        input: texts,
+      };
 
-    console.time('embeddings');
-    const response = await fetch(`${this.baseUrl}/embeddings`, options);
-    console.timeEnd('embeddings');
-    const result = (await response.json()) as EmbeddingsAPIResponse;
-    return result.data.map((item) => item.embedding);
+      const options = {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(data),
+      };
+
+      console.time(`embeddings-${index}`);
+      const response = await fetch(`${this.baseUrl}/embeddings`, options);
+      console.timeEnd(`embeddings-${index}`);
+
+      const result = (await response.json()) as EmbeddingsAPIResponse;
+      return result.data.map((item) => item.embedding);
+    });
+
+    console.time('embeddings-general');
+    const results = await Promise.all(promises);
+    console.timeEnd('embeddings-general');
+    return results.flat();
   }
 }
