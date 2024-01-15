@@ -1,4 +1,4 @@
-import { Document } from 'langchain/document';
+import { Document } from '@langchain/core/documents';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 import { VECTOR_DATABASE_FIELD_NAME } from '@/constants/vector-database';
@@ -42,6 +42,9 @@ export class EmbeddingsService {
   async generateChunks(documents: GenerateChunksInput) {
     const splitter = await this.getTextSplitter(documents);
     const chunks = await splitter.splitDocuments(documents);
+    console.info(
+      `Generated ${chunks.length} chunks for ${documents.length} documents`,
+    );
     return chunks;
   }
 

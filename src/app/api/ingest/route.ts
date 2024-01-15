@@ -19,13 +19,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const github = new GitHubService();
-    const docs = await github.ingestRepository({
-      repositoryUrl,
-      githubAccessToken,
-      githubBaseUrl,
-      githubApiUrl,
-    });
+    const github = new GitHubService({ repositoryUrl });
+    const docs = await github.ingestRepository();
 
     const embeddingsService = new EmbeddingsService();
     const chunks = await embeddingsService.generateChunks(docs);
@@ -35,13 +30,16 @@ export async function POST(request: Request) {
       ...doc,
       [VECTOR_DATABASE_FIELD_NAME]: embeddings[index],
     }));
-    await embeddingsService.upsertEmbeddings(chunksWithEmbeddings);
+    void embeddingsService.upsertEmbeddings(chunksWithEmbeddings);
 
     return NextResponse.json({
       success: true,
     });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ success: false, error });
+    return NextResponse.json({
+      success: false,
+      error: JSON.stringify(error),
+    });
   }
 }
