@@ -66,7 +66,7 @@ export class TogetherAIService {
                 reject(err);
               }
             },
-            (2000 / array.length) * index,
+            (2500 / array.length) * index,
           );
         }),
     );
