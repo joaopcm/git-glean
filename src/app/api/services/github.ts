@@ -140,6 +140,7 @@ export class GitHubService {
           );
         } catch (err) {
           reject(err);
+          // TODO: add retry logic
         }
 
         activePromises--;
