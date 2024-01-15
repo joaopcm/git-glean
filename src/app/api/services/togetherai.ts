@@ -1,3 +1,5 @@
+import { EMBEDDING_MODEL_NAME } from '@/constants/embeddings';
+
 type EmbeddingsAPIResponse = {
   object: 'list';
   data: {
@@ -13,7 +15,6 @@ export class TogetherAIService {
   private baseUrl: string;
   private apiKey: string;
   private headers: Headers;
-  private embeddingLLM = 'sentence-transformers/msmarco-bert-base-dot-v5';
   private batchSize = 25;
 
   constructor() {
@@ -27,7 +28,7 @@ export class TogetherAIService {
 
   private async processBatch(texts: string[], index: number) {
     const data = {
-      model: this.embeddingLLM,
+      model: EMBEDDING_MODEL_NAME,
       input: texts,
     };
     const options = {
@@ -65,7 +66,7 @@ export class TogetherAIService {
                 reject(err);
               }
             },
-            (2250 / array.length) * index,
+            (2000 / array.length) * index,
           );
         }),
     );

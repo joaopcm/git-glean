@@ -65,6 +65,7 @@ export class GitHubService {
     });
 
     if (!response.ok) {
+      console.error(await response.json());
       throw new Error(`Could not fetch repository info for ${owner}/${repo}.`);
     }
 
@@ -163,6 +164,7 @@ export class GitHubService {
     );
 
     if (!response.ok) {
+      console.error(await response.json());
       throw new Error(
         `Could not fetch repository tree for ${owner}/${repo} on branch ${defaultBranch}.`,
       );

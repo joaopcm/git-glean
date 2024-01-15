@@ -7,8 +7,7 @@ import { GitHubService } from '../services/github';
 
 export async function POST(request: Request) {
   try {
-    const { repositoryUrl, githubAccessToken, githubBaseUrl, githubApiUrl } =
-      await request.json();
+    const { repositoryUrl } = await request.json();
 
     if (!repositoryUrl) {
       return new Response(
@@ -36,10 +35,14 @@ export async function POST(request: Request) {
       success: true,
     });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({
-      success: false,
-      error: JSON.stringify(error),
+    if (error instanceof Error) {
+      return new Response(error.message, {
+        status: 500,
+      });
+    }
+
+    return new Response('Unknown error', {
+      status: 500,
     });
   }
 }
